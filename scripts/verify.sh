@@ -7,12 +7,12 @@
 
 source "$(dirname "$0")/_compose.sh"
 
-PORT="$(env_value APP_PORT)"; PORT="${PORT:-8000}"
+APP="$(app_url)"
 
-echo "== /health"
-curl -sS "http://localhost:${PORT}/health"; echo
+echo "== /health ($APP)"
+curl -sS "$APP/health"; echo
 echo "== /docs"
-curl -sS -o /dev/null -w 'HTTP %{http_code}\n' "http://localhost:${PORT}/docs"
+curl -sS -o /dev/null -w 'HTTP %{http_code}\n' "$APP/docs"
 echo "== seed counts (expected on a fresh database: 2 / 4 / 12)"
 # psql runs with the credentials the postgres container itself was started with.
 compose exec -T postgres sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -At -c "
@@ -21,4 +21,4 @@ compose exec -T postgres sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -At -
   union all select '"'"'devices'"'"', count(*) from devices;"'
 
 echo "== public URL (only when a tunnel profile is running)"
-curl -sS "http://localhost:${PORT}/tunnel/"; echo
+curl -sS "$APP/tunnel/"; echo

@@ -110,9 +110,13 @@ def test_missing_password_is_a_clear_configuration_error(project):
     assert "Set POSTGRES_PASSWORD in env.local" in result.stderr
 
 
-@pytest.mark.parametrize("shell_env", [{}, SHELL_ENV], ids=["file-only", "shell-overrides-file"])
+@pytest.mark.parametrize(
+    "shell_env",
+    [{}, SHELL_ENV, {"APP_PORT": "", "POSTGRES_DB": ""}],
+    ids=["file-only", "shell-overrides-file", "exported-but-empty-counts-as-set"],
+)
 def test_helper_scripts_resolve_settings_like_compose(project, shell_env):
-    """scripts/_compose.sh env_value: exported shell value wins, then env.local."""
+    """scripts/_compose.sh env_value: a variable set in the shell wins even when empty."""
     script = (
         "source scripts/_compose.sh; for k in APP_PORT POSTGRES_DB POSTGRES_USER; "
         "do printf '%s=%s\\n' $k \"$(env_value $k)\"; done"
@@ -130,3 +134,12 @@ def test_helper_scripts_resolve_settings_like_compose(project, shell_env):
     expected = {"APP_PORT": "8000", "POSTGRES_DB": "filedb", "POSTGRES_USER": "fileuser"}
     expected.update({k: v for k, v in shell_env.items() if k in expected})
     assert got == expected
+
+
+@needs_compose
+def test_empty_shell_override_publishes_the_compose_default_port(project):
+    (project / "env.local").write_text(FILE_ENV.replace("APP_PORT=8000", "APP_PORT=8123"))
+    services = compose_config(project, {"APP_PORT": ""})["services"]
+    assert str(services["app"]["ports"][0]["published"]) == "8000"
+    services = compose_config(project, {})["services"]
+    assert str(services["app"]["ports"][0]["published"]) == "8123"

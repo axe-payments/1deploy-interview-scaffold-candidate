@@ -19,12 +19,24 @@ compose() {
 }
 
 # Effective value of one setting, with the same precedence Compose uses for ${...}
-# interpolation: a variable exported in your shell wins, then env.local, else empty.
+# interpolation: a variable that is SET in your shell wins even when it is empty (Compose
+# then applies its own :- default), otherwise env.local, otherwise empty. Callers apply
+# the same defaults as docker-compose.yml.
 env_value() {
-  local exported="${!1:-}"
-  if [ -n "$exported" ]; then
-    printf '%s\n' "$exported"
+  if [ -n "${!1+set}" ]; then
+    printf '%s\n' "${!1}"
   else
     grep -E "^$1=" env.local | head -1 | cut -d= -f2- || true
   fi
+}
+
+# Host URL of the running app, taken from the container's actual published port so it can
+# never disagree with what Compose started. Falls back to the configured port when the
+# stack is not running.
+app_url() {
+  local mapping port
+  mapping="$(compose port app 8000 2>/dev/null | tail -1 || true)"
+  port="${mapping##*:}"
+  if [ -z "$port" ]; then port="$(env_value APP_PORT)"; port="${port:-8000}"; fi
+  printf 'http://localhost:%s\n' "$port"
 }

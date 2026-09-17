@@ -10,8 +10,7 @@
 
 source "$(dirname "$0")/_compose.sh"
 
-PORT="$(env_value APP_PORT)"; PORT="${PORT:-8000}"
-URL="${URL:-http://localhost:${PORT}/inbound/heartbeat/}"
+URL="${URL:-$(app_url)/inbound/heartbeat/}"
 DEVICE="${1:-ns-fin-01}"
 
 # Resolve the department/organisation for the device from the fixture, inside the container.
