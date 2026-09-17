@@ -106,3 +106,11 @@ async def test_httpx_request_line_is_not_logged_at_info(slack_transport, configu
     await _send_slack_message("x")
     assert not [r for r in real_logging.records if r.name.startswith("httpx")]
     assert "SENTINEL" not in _rendered(real_logging)
+
+
+async def test_redirect_is_not_a_delivery(slack_transport, configured, real_logging):
+    slack_transport["behaviour"]["status"] = 302
+    with pytest.raises(SlackDeliveryError, match="HTTP 302"):
+        await _send_slack_message("x")
+    assert "delivered" not in _rendered(real_logging)
+    assert "SENTINEL" not in _rendered(real_logging)

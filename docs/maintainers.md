@@ -32,7 +32,8 @@ requires a coordinated change in both repositories and both plans.
   Never commit credentials, never bake `env.local` into the image.
 - Every `docker compose` call needs `--env-file env.local`; scripts source
   `scripts/_compose.sh` for that.
-- Only the app port is ever tunnelled. Postgres has no host port; Adminer binds to
+- The helper scripts need only bash, curl and sed on the host; anything else runs inside
+  the app container. Only the app port is ever tunnelled. Postgres has no host port; Adminer binds to
   localhost.
 - Logging never prints the webhook URL, connection strings or tokens. The `httpx` and
   `httpcore` loggers are pinned to WARNING for that reason.

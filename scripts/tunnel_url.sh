@@ -7,19 +7,20 @@
 #   ./scripts/tunnel_url.sh ngrok        # only ngrok, fail if it is not up
 #
 # Reads the providers' local APIs published on localhost by docker-compose.yml.
-# Only needs bash + curl + python3.
+# Only needs bash + curl + sed.
 
 set -euo pipefail
 
 PROVIDER="${1:-any}"
 
 cloudflared_url() {
-  curl -sf http://localhost:2000/quicktunnel 2>/dev/null \
-    | python3 -c 'import sys,json; h=json.load(sys.stdin).get("hostname",""); print("https://"+h if h else "")' 2>/dev/null || true
+  local host
+  host="$(curl -sf http://localhost:2000/quicktunnel 2>/dev/null | sed -n 's/.*"hostname" *: *"\([^"]*\)".*/\1/p')"
+  [ -n "$host" ] && echo "https://$host" || true
 }
 ngrok_url() {
   curl -sf http://localhost:4040/api/tunnels 2>/dev/null \
-    | python3 -c 'import sys,json; t=[x["public_url"] for x in json.load(sys.stdin).get("tunnels",[]) if x.get("public_url","").startswith("https://")]; print(t[0] if t else "")' 2>/dev/null || true
+    | sed -n 's/.*"public_url" *: *"\(https:\/\/[^"]*\)".*/\1/p' | head -1 || true
 }
 
 for _ in $(seq 1 30); do
@@ -38,5 +39,5 @@ for _ in $(seq 1 30); do
   sleep 1
 done
 
-echo "No public URL from '$PROVIDER' yet. Is the tunnel running? Start it with ./scripts/tunnel.sh${PROVIDER:+ }$( [ "$PROVIDER" = any ] || echo "$PROVIDER" )" >&2
+echo "No public URL from '$PROVIDER' yet. Is the tunnel running? Start it with ./scripts/tunnel.sh$( [ "$PROVIDER" = any ] || echo " $PROVIDER" )" >&2
 exit 1

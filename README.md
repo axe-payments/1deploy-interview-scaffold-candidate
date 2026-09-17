@@ -129,8 +129,9 @@ docker compose --env-file env.local exec app ruff check .
 
 The app runs in Docker, so your editor needs the packages for import resolution and lint:
 
-- **Dev container (no local Python):** in Cursor/VS Code run "Dev Containers: Reopen in
-  Container" (config in `.devcontainer/`).
+- **Attach to the running container (no local Python):** with the stack up, in Cursor/VS Code
+  run "Dev Containers: Attach to Running Container…", pick the `app` container and open
+  `/code`. The interpreter there already has every dependency.
 - **Local venv:** `./scripts/setup_venv.sh` (needs Python 3.12), then pick
   `./.venv/bin/python` as the interpreter. `.vscode/` already points at it. This also lets
   you run `./.venv/bin/pytest` directly.

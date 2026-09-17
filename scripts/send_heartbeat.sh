@@ -6,15 +6,16 @@
 #   ./scripts/send_heartbeat.sh hb-sup-02             # another device id from the fixture
 #   URL=https://<tunnel>/inbound/heartbeat/ ./scripts/send_heartbeat.sh
 #
-# Only needs bash + curl.
+# Needs bash + curl + the running stack (the device lookup runs inside the app container).
 
-set -euo pipefail
+source "$(dirname "$0")/_compose.sh"
 
-URL="${URL:-http://localhost:${APP_PORT:-8000}/inbound/heartbeat/}"
+PORT="$(env_value APP_PORT)"; PORT="${PORT:-8000}"
+URL="${URL:-http://localhost:${PORT}/inbound/heartbeat/}"
 DEVICE="${1:-ns-fin-01}"
 
-# Derive the department/organisation for the chosen device from the fixture.
-read -r ORG DEPT < <(python3 - "$DEVICE" <<'PY'
+# Resolve the department/organisation for the device from the fixture, inside the container.
+read -r ORG DEPT < <(compose exec -T app python - "$DEVICE" <<'PY'
 import json, sys
 data = json.load(open("fixtures/fleet-v1.json"))
 device = next((d for d in data["devices"] if d["id"] == sys.argv[1]), None)
@@ -24,6 +25,7 @@ dept = next(d for d in data["departments"] if d["id"] == device["department_id"]
 print(dept["organisation_id"], dept["id"])
 PY
 )
+[ -n "${ORG:-}" ] || { echo "could not resolve device '$DEVICE' (is the stack up?)" >&2; exit 1; }
 
 NOW="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 PAYLOAD=$(printf '{"organisation_id":"%s","department_id":"%s","device_id":"%s","sent_at":"%s","last_upload_at":"%s"}' \

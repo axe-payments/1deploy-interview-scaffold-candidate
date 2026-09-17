@@ -54,7 +54,8 @@ async def _send_slack_message(message: str) -> None:
         )
         raise SlackDeliveryError(f"Slack request failed ({error_class})") from None
 
-    if response.status_code >= 400:
+    if not 200 <= response.status_code < 300:
+        # httpx does not follow redirects, so a 3xx is not a delivery either.
         LOG.error(
             "Slack rejected the message",
             extra={"outcome": "rejected", "status": response.status_code},

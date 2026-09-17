@@ -35,3 +35,31 @@ async def test_tunnel_route_without_a_tunnel(client):
     body = response.json()
     assert body["public_base_url"] is None
     assert body["providers"] == {"cloudflared": None, "ngrok": None}
+
+
+async def test_tunnel_route_reports_each_provider_that_answers(client, monkeypatch):
+    from app import tunnel
+
+    async def fake_get_json(url: str):
+        if "quicktunnel" in url:
+            return {"hostname": "abc.trycloudflare.com"}
+        return {
+            "tunnels": [{"public_url": "http://x.ngrok.app"}, {"public_url": "https://x.ngrok.app"}]
+        }
+
+    monkeypatch.setattr(tunnel, "_get_json", fake_get_json)
+    body = (await client.get("/tunnel/")).json()
+    assert body["providers"] == {
+        "cloudflared": "https://abc.trycloudflare.com",
+        "ngrok": "https://x.ngrok.app",
+    }
+    assert body["public_base_url"] == "https://abc.trycloudflare.com"
+
+
+async def test_public_base_url_override_wins(client, monkeypatch):
+    from app.config import settings
+
+    monkeypatch.setattr(settings, "public_base_url", "https://fixed.example/")
+    body = (await client.get("/tunnel/")).json()
+    assert body["public_base_url"] == "https://fixed.example"
+    assert body["override"] == "https://fixed.example/"

@@ -6,6 +6,8 @@ public URL are all optional and blank by default. The database password is the o
 you must set locally (Compose refuses to start Postgres without it).
 """
 
+from urllib.parse import quote
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -43,8 +45,12 @@ class Settings(BaseSettings):
         """Tortoise ORM connection URL: `DATABASE_URL` if set, else built from POSTGRES_*."""
         if self.database_url:
             return self.database_url
+        # Any local password is allowed, so it is percent-encoded: "dev/test" or "p#1" would
+        # otherwise be read as URL delimiters and break startup. Tortoise decodes the password
+        # but not the user name, so keep POSTGRES_USER a plain identifier.
+        password = quote(self.postgres_password, safe="")
         return (
-            f"postgres://{self.postgres_user}:{self.postgres_password}"
+            f"postgres://{self.postgres_user}:{password}"
             f"@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
         )
 

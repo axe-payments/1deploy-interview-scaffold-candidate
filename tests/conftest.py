@@ -17,6 +17,10 @@ os.environ["DATABASE_URL"] = f"sqlite://{_SCRATCH / 'bootstrap.db'}"
 os.environ["SLACK_WEBHOOK_URL"] = ""
 os.environ["NGROK_AUTHTOKEN"] = ""
 os.environ["PUBLIC_BASE_URL"] = ""
+# Tunnel discovery must be deterministic even when ./scripts/test.sh runs inside the app
+# container next to a live cloudflared/ngrok container: point it at a closed port.
+os.environ["CLOUDFLARED_API_URL"] = "http://127.0.0.1:9/quicktunnel"
+os.environ["NGROK_API_URL"] = "http://127.0.0.1:9/api/tunnels"
 
 import httpx  # noqa: E402
 import pytest  # noqa: E402
