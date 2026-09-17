@@ -16,6 +16,16 @@ services:
       - ./:/code # source mounted -> uvicorn --reload picks up your edits live
     env_file:
       - env.local
+    # The database settings are ALSO passed through interpolation, exactly as the postgres
+    # service receives them. A value exported in your shell overrides env.local for
+    # interpolation, and without this block the app would keep the file's value while
+    # Postgres used the shell's, and the app could not log in.
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-interview}
+      POSTGRES_USER: ${POSTGRES_USER:-interview}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in env.local (any local dev value)}
+      POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
     depends_on:
       postgres:
         condition: service_healthy
