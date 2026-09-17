@@ -1,0 +1,10 @@
+# Lint/format config for the editor and `ruff check` / `ruff format`.
+line-length = 100
+target-version = "py312"
+
+[lint]
+# pyflakes (F), pycodestyle (E/W), isort (I).
+select = ["E", "F", "W", "I"]
+
+# Do not format code blocks inside the planning documents.
+exclude = ["docs"]

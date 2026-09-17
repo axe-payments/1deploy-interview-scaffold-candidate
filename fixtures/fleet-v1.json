@@ -1,0 +1,101 @@
+{
+  "fixture_version": 1,
+  "organisations": [
+    {
+      "id": "org-northstar",
+      "name": "Northstar Logistics"
+    },
+    {
+      "id": "org-harbour",
+      "name": "Harbour Services"
+    }
+  ],
+  "departments": [
+    {
+      "id": "dept-northstar-finance",
+      "organisation_id": "org-northstar",
+      "name": "Finance",
+      "timezone": "Australia/Sydney"
+    },
+    {
+      "id": "dept-northstar-support",
+      "organisation_id": "org-northstar",
+      "name": "Support",
+      "timezone": "Europe/London"
+    },
+    {
+      "id": "dept-harbour-finance",
+      "organisation_id": "org-harbour",
+      "name": "Finance",
+      "timezone": "Europe/London"
+    },
+    {
+      "id": "dept-harbour-support",
+      "organisation_id": "org-harbour",
+      "name": "Support",
+      "timezone": "America/New_York"
+    }
+  ],
+  "devices": [
+    {
+      "id": "ns-fin-01",
+      "department_id": "dept-northstar-finance",
+      "name": "NS-FIN-01"
+    },
+    {
+      "id": "ns-fin-02",
+      "department_id": "dept-northstar-finance",
+      "name": "NS-FIN-02"
+    },
+    {
+      "id": "ns-fin-03",
+      "department_id": "dept-northstar-finance",
+      "name": "NS-FIN-03"
+    },
+    {
+      "id": "ns-sup-01",
+      "department_id": "dept-northstar-support",
+      "name": "NS-SUP-01"
+    },
+    {
+      "id": "ns-sup-02",
+      "department_id": "dept-northstar-support",
+      "name": "NS-SUP-02"
+    },
+    {
+      "id": "ns-sup-03",
+      "department_id": "dept-northstar-support",
+      "name": "NS-SUP-03"
+    },
+    {
+      "id": "hb-fin-01",
+      "department_id": "dept-harbour-finance",
+      "name": "HB-FIN-01"
+    },
+    {
+      "id": "hb-fin-02",
+      "department_id": "dept-harbour-finance",
+      "name": "HB-FIN-02"
+    },
+    {
+      "id": "hb-fin-03",
+      "department_id": "dept-harbour-finance",
+      "name": "HB-FIN-03"
+    },
+    {
+      "id": "hb-sup-01",
+      "department_id": "dept-harbour-support",
+      "name": "HB-SUP-01"
+    },
+    {
+      "id": "hb-sup-02",
+      "department_id": "dept-harbour-support",
+      "name": "HB-SUP-02"
+    },
+    {
+      "id": "hb-sup-03",
+      "department_id": "dept-harbour-support",
+      "name": "HB-SUP-03"
+    }
+  ]
+}

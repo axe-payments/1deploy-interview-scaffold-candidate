@@ -1,0 +1,80 @@
+# Run with:  docker compose --env-file env.local up --build
+#
+# `--env-file env.local` is required on EVERY docker compose command (up, exec, logs,
+# down ...). Compose re-reads this file each time to fill in the ${...} values below,
+# and the postgres password is deliberately required. The scripts/ helpers add it for you.
+
+services:
+  app:
+    build: .
+    # Bind to 0.0.0.0 inside the container so the host port mapping and the tunnel
+    # containers can reach it. Host side is published on localhost only.
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "127.0.0.1:${APP_PORT:-8000}:8000"
+    volumes:
+      - ./:/code # source mounted -> uvicorn --reload picks up your edits live
+    env_file:
+      - env.local
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-interview}
+      POSTGRES_USER: ${POSTGRES_USER:-interview}
+      # Required. The :? form makes Compose fail with this message instead of
+      # starting a database with an empty password.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in env.local (any local dev value)}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # No `ports:` on purpose. The database is reachable only from the other
+    # containers (as host "postgres") and via Adminer below.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-interview} -d ${POSTGRES_DB:-interview}"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  # Database browser: http://localhost:8080
+  # System: PostgreSQL | Server: postgres | Username/Password/Database: from env.local
+  adminer:
+    image: adminer:5
+    ports:
+      - "127.0.0.1:${ADMINER_PORT:-8080}:8080"
+    depends_on:
+      - postgres
+
+  # ---- Optional public tunnel (profile "tunnel", default choice) --------------------
+  # Cloudflare quick tunnel: no account, no token. Start with
+  #   docker compose --env-file env.local --profile tunnel up
+  # or ./scripts/tunnel.sh . It exposes ONLY the app port. The random public URL is
+  # printed by ./scripts/tunnel_url.sh (read from the metrics endpoint on :2000).
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    profiles: ["tunnel"]
+    command: tunnel --no-autoupdate --metrics 0.0.0.0:2000 --url http://app:8000
+    ports:
+      - "127.0.0.1:2000:2000" # metrics + /quicktunnel (local only)
+    depends_on:
+      - app
+
+  # ---- Optional public tunnel via ngrok (profile "ngrok") -------------------------
+  # Needs NGROK_AUTHTOKEN in env.local. Start with ./scripts/tunnel.sh ngrok
+  # The token uses ${VAR:-} (NOT :?) on purpose: Compose interpolates every service,
+  # even ones whose profile is off, so a required token here would break plain `up`.
+  ngrok:
+    image: ngrok/ngrok:latest
+    profiles: ["ngrok"]
+    command: http app:8000 --log stdout
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN:-}
+    ports:
+      - "127.0.0.1:4040:4040" # ngrok inspector + local API (local only)
+    depends_on:
+      - app
+
+volumes:
+  pgdata:
