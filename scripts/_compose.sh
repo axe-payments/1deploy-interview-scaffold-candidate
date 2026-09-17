@@ -18,7 +18,13 @@ compose() {
   docker compose --env-file env.local "$@"
 }
 
-# Read one KEY=value from env.local (empty string if missing).
+# Effective value of one setting, with the same precedence Compose uses for ${...}
+# interpolation: a variable exported in your shell wins, then env.local, else empty.
 env_value() {
-  grep -E "^$1=" env.local | head -1 | cut -d= -f2- || true
+  local exported="${!1:-}"
+  if [ -n "$exported" ]; then
+    printf '%s\n' "$exported"
+  else
+    grep -E "^$1=" env.local | head -1 | cut -d= -f2- || true
+  fi
 }
