@@ -15,7 +15,10 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
-FILE_ENV = "APP_PORT=8000\nPOSTGRES_DB=filedb\nPOSTGRES_USER=fileuser\nPOSTGRES_PASSWORD=synthetic-file-password\nSLACK_WEBHOOK_URL=\nNGROK_AUTHTOKEN=\n"
+FILE_ENV = (
+    "APP_PORT=8000\nPOSTGRES_DB=filedb\nPOSTGRES_USER=fileuser\n"
+    "POSTGRES_PASSWORD=synthetic-file-password\nSLACK_WEBHOOK_URL=\nNGROK_AUTHTOKEN=\n"
+)
 SHELL_ENV = {
     "POSTGRES_PASSWORD": "synthetic-shell-password",
     "POSTGRES_USER": "shelluser",
@@ -110,7 +113,10 @@ def test_missing_password_is_a_clear_configuration_error(project):
 @pytest.mark.parametrize("shell_env", [{}, SHELL_ENV], ids=["file-only", "shell-overrides-file"])
 def test_helper_scripts_resolve_settings_like_compose(project, shell_env):
     """scripts/_compose.sh env_value: exported shell value wins, then env.local."""
-    script = "source scripts/_compose.sh; for k in APP_PORT POSTGRES_DB POSTGRES_USER; do printf '%s=%s\\n' $k \"$(env_value $k)\"; done"
+    script = (
+        "source scripts/_compose.sh; for k in APP_PORT POSTGRES_DB POSTGRES_USER; "
+        "do printf '%s=%s\\n' $k \"$(env_value $k)\"; done"
+    )
     result = subprocess.run(
         ["bash", "-c", script],
         cwd=project,
