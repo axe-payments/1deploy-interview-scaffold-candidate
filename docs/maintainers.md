@@ -40,7 +40,8 @@ requires a coordinated change in both repositories and both plans.
 
 ## Contributor instructions for AI agents
 
-Building or maintaining this scaffold is not the same as solving the exercise. When
-working on this repository as a maintainer, keep the boundary above. When a candidate uses
-AI tools during the interview, that is allowed and expected; do not add instruction files
-that restrict how they use them.
+`AGENTS.md` (imported by `CLAUDE.md`) is written for the **candidate's** assistant during
+the interview: fast on orientation, libraries, mechanical bugs and already-designed code;
+hands-off on the design decisions and on diagnosing behavioural problems in their solution.
+When an agent works on this repository as a **maintainer**, that file does not apply; keep
+the scaffold-versus-solution boundary above instead.

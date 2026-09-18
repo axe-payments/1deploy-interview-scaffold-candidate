@@ -101,7 +101,10 @@ restarts**. Watch the `docker compose up` terminal for errors after each save.
 | `tests/` | Tests for the supplied pieces. Add your own alongside. |
 
 You can change any file, model, or function signature. Use whatever AI tools you normally
-use.
+use. `AGENTS.md` (which `CLAUDE.md` imports) sets the ground rules your assistant will
+follow in this repo: it helps fully with orientation, libraries, bugs and code you have
+designed, and asks for your thinking on the design decisions. Read it so its pushback
+does not surprise you.
 
 ### Database
 
