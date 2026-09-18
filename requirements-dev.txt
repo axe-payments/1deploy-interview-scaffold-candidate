@@ -1,0 +1,9 @@
+# Test and editor tooling. Installed into the Docker image too, so
+# `./scripts/test.sh` works without any Python on your machine.
+-r requirements.txt
+
+pytest==9.1.1
+pytest-asyncio==1.4.0
+asgi-lifespan==2.1.0
+aiosqlite==0.22.1
+ruff==0.16.8
