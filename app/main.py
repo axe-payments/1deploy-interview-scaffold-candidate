@@ -12,6 +12,7 @@ from tortoise.contrib.fastapi import RegisterTortoise
 from app.config import settings
 from app.inbound import router as inbound_router
 from app.log import configure_logging
+from app.schema import sync_schema
 from app.seed import seed_inventory
 from app.tunnel import discover_tunnels, public_base_url
 
@@ -36,14 +37,14 @@ OPENAPI_TAGS = [
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     configure_logging(settings.log_level)
-    # generate_schemas=True creates a table for every model in app/models.py that does not
-    # exist yet. It never alters existing tables (see app/models.py).
+    # sync_schema creates a table for every model in app/models.py and rebuilds any whose
+    # model changed since its table was built (see app/schema.py).
     async with RegisterTortoise(
         app,
         db_url=settings.db_url,
         modules={"models": ["app.models"]},
-        generate_schemas=True,
     ):
+        await sync_schema()
         summary = await seed_inventory()
         LOG.info(
             "Startup complete",

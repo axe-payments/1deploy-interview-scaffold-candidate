@@ -4,7 +4,8 @@ Rules (deliberate, so your own data survives restarts):
 - Rows are inserted parent-first only when their id is missing.
 - Existing rows are never updated or deleted, even if they differ from the fixture.
 - Extra rows and extra tables you add are left alone.
-- Nothing is truncated or dropped. The only destructive action is ./scripts/reset_db.sh.
+- Nothing is truncated or dropped here. Rows go only when a model changes (its table is
+  rebuilt, see app/schema.py) or with ./scripts/reset_db.sh.
 """
 
 import json

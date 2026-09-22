@@ -110,9 +110,12 @@ not surprise you.
 Adminer at <http://localhost:8080> opens already logged in to the interview database,
 using the credentials from your `env.local`.
 
-New models in `app/models.py` get their tables created automatically on restart. Adding or
-changing columns on an *existing* table does not alter it. For that, reset the local
-database (destructive: it deletes every row and table you added):
+Tables follow `app/models.py`: save a new model and its table exists; change an existing
+model and its table is rebuilt to match on restart. A rebuild drops that table's rows
+(the inventory is reseeded straight away); everything else is left alone. There is nothing
+to run.
+
+To wipe the whole database instead (every row and table you added):
 
 ```bash
 ./scripts/reset_db.sh      # asks for confirmation, then removes this project's volume
