@@ -57,19 +57,31 @@ services:
     depends_on:
       - postgres
 
-  # ---- Optional public tunnel (profile "tunnel", default choice) --------------------
-  # Cloudflare quick tunnel: no account, no token. Start with
-  #   docker compose --env-file env.local --profile tunnel up
-  # or ./scripts/tunnel.sh . It exposes ONLY the app port. The random public URL is
-  # printed by ./scripts/tunnel_url.sh (read from the metrics endpoint on :2000).
+  # ---- Public tunnel (starts with every `up`) ---------------------------------------
+  # Cloudflare quick tunnel: no account, no token. It exposes ONLY the app port. The random
+  # public URL is printed by the tunnel-url service below and by ./scripts/tunnel_url.sh.
   cloudflared:
     image: cloudflare/cloudflared:latest
-    profiles: ["tunnel"]
     command: tunnel --no-autoupdate --metrics 0.0.0.0:2000 --url http://app:8000
     ports:
       - "127.0.0.1:2000:2000" # metrics + /quicktunnel (local only)
     depends_on:
       - app
+
+  # Prints the tunnel's public URL in a banner once it is connected, then exits.
+  tunnel-url:
+    image: busybox:1.37
+    depends_on:
+      - cloudflared
+    command:
+      - sh
+      - -c
+      - |
+        until wget -q -O /dev/null http://cloudflared:2000/ready 2>/dev/null; do sleep 2; done
+        host=$$(wget -q -O - http://cloudflared:2000/quicktunnel | sed -n 's/.*"hostname" *: *"\([^"]*\)".*/\1/p')
+        echo "################################################################"
+        echo "#  Tunnel URL: https://$$host"
+        echo "################################################################"
 
   # ---- Optional public tunnel via ngrok (profile "ngrok") -------------------------
   # Needs NGROK_AUTHTOKEN in env.local. Start with ./scripts/tunnel.sh ngrok
