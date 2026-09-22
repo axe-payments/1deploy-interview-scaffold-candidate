@@ -48,12 +48,18 @@ services:
       timeout: 5s
       retries: 30
 
-  # Database browser: http://localhost:8080
-  # System: PostgreSQL | Server: postgres | Username/Password/Database: from env.local
+  # Database browser: http://localhost:8080 opens logged in to the interview database.
+  # adminer/autologin.php does the login with the same credentials Postgres gets below.
   adminer:
     image: adminer:5
     ports:
       - "127.0.0.1:${ADMINER_PORT:-8080}:8080"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-interview}
+      POSTGRES_USER: ${POSTGRES_USER:-interview}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in env.local (any local dev value)}
+    volumes:
+      - ./adminer/autologin.php:/var/www/html/plugins-enabled/autologin.php:ro
     depends_on:
       - postgres
 

@@ -5,26 +5,24 @@ is public. Two rules keep it useful:
 
 ## 1. Scaffold, not solution
 
-The candidate's exercise (see `TASK.md`) is to detect silence, notify once per outage and
-allow a new notification after recovery. The scaffold must therefore never contain:
+The scaffold supplies working input (the heartbeat route), the seeded inventory and working
+output (the Slack transport). Everything between them is the candidate's exercise (see
+`TASK.md`). Candidates read this repository, so nothing in it (code, tests, comments, docs
+or planning notes) may implement, sketch or name any part of a solution, and nothing may
+call `notify()` / `_send_slack_message()` automatically.
 
-- heartbeat persistence, a `last_seen` column, or any stored receipt timestamp;
-- a periodic sweep, background timer or scheduler;
-- a health or incident model, notification deduplication, or recovery logic;
-- a fleet status API or dashboard that presupposes a health schema;
-- anything that calls `notify()` / `_send_slack_message()` automatically.
+There is no test suite, on purpose: test cases describe the inputs that matter. Do not add
+one. Change only what the task in hand asks for.
 
-Tests in `tests/` prove the supplied pieces work (route validation, seeding, Slack transport
-redaction). They must not smuggle in an example alert engine to pass. A private companion
-repository (`1deploy-interview-scaffold-staff`) holds the interviewer's traffic simulator
-and guide; nothing from it belongs here.
+A private companion repository (`1deploy-interview-scaffold-staff`) holds the interviewer's
+traffic simulator and guide. Anything that describes the solution belongs there, not here.
 
 ## 2. The shared contract
 
 `fixtures/fleet-v1.json` and the `POST /inbound/heartbeat/` payload are the integration
 boundary with the staff simulator. Both repositories carry a byte-identical copy of the
 fixture. Changing ids, fields, the route, the 201 response, or the accepted timestamp forms
-requires a coordinated change in both repositories and both plans.
+requires a coordinated change in both repositories.
 
 ## Layout conventions
 
@@ -34,7 +32,8 @@ requires a coordinated change in both repositories and both plans.
   `scripts/_compose.sh` for that.
 - The helper scripts need only bash, curl and sed on the host; anything else runs inside
   the app container. Only the app port is ever tunnelled. Postgres has no host port; Adminer binds to
-  localhost.
+  localhost and logs itself in (`adminer/autologin.php`), which is acceptable only because
+  it is never tunnelled.
 - Logging never prints the webhook URL, connection strings or tokens. The `httpx` and
   `httpcore` loggers are pinned to WARNING for that reason.
 

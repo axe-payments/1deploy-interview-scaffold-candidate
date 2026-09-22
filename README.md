@@ -50,11 +50,11 @@ devices**. (`/health` means this server is up. It says nothing about any device.
 You get `{"status":"received"}` with HTTP 201, and the `docker compose up` terminal shows:
 
 ```
-INFO app.inbound Heartbeat received organisation_id='org-northstar' department_id='dept-northstar-finance' device_id='ns-fin-01' sent_at='...' last_upload_at='...' received_at='...'
+INFO app.inbound Heartbeat received organisation_id='org-northstar' department_id='dept-northstar-finance' device_id='ns-fin-01' sent_at='...' last_upload_at='...'
 ```
 
-That log line is all the scaffold does with a heartbeat today. A 201 means "received",
-not "stored" and certainly not "healthy".
+That log line is all the scaffold does with a heartbeat today. A 201 means only that the
+request was received.
 
 **Check Slack** (needs `SLACK_WEBHOOK_URL` in `env.local`):
 
@@ -64,7 +64,7 @@ not "stored" and certainly not "healthy".
 
 Posts one labelled test message to the interview channel through the same transport
 helper your code will use. This is the only thing in the scaffold that ever sends to Slack
-by itself; startup, tests and heartbeats never do.
+by itself; startup and heartbeats never do.
 
 ## Let the interviewer reach your app (tunnel)
 
@@ -98,7 +98,6 @@ restarts**. Watch the `docker compose up` terminal for errors after each save.
 | `app/seed.py` | Seeds `fixtures/fleet-v1.json` on startup without touching rows you changed or added. |
 | `app/config.py`, `app/main.py`, `app/log.py`, `app/tunnel.py` | Wiring. You should not need to touch these, but you can. |
 | `fixtures/fleet-v1.json` | The inventory: 2 organisations → 4 departments → 12 devices. Same file the simulator uses. |
-| `tests/` | Tests for the supplied pieces. Add your own alongside. |
 
 You can change any file, model, or function signature. Use whatever AI tools you normally
 use. `AGENTS.md` (which `CLAUDE.md` imports) sets the ground rules your assistant follows in
@@ -108,8 +107,8 @@ not surprise you.
 
 ### Database
 
-Adminer at <http://localhost:8080>: System `PostgreSQL`, Server `postgres`, and the
-username / password / database from your `env.local`.
+Adminer at <http://localhost:8080> opens already logged in to the interview database,
+using the credentials from your `env.local`.
 
 New models in `app/models.py` get their tables created automatically on restart. Adding or
 changing columns on an *existing* table does not alter it. For that, reset the local
@@ -122,9 +121,10 @@ docker compose --env-file env.local up --build   # recreates + reseeds 2 / 4 / 1
 
 ### Tests and lint
 
+No tests are supplied. pytest is installed in the container if you want to add some.
+
 ```bash
-./scripts/test.sh            # pytest inside the container (uses SQLite + a fake Slack)
-./scripts/test.sh -k inbound # pass any pytest arguments
+./scripts/test.sh            # pytest inside the container; pass any pytest arguments
 docker compose --env-file env.local exec app ruff check .
 ```
 

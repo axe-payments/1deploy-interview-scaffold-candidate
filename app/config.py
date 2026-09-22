@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     postgres_password: str = ""
     postgres_host: str = "postgres"
     postgres_port: int = 5432
-    # Full connection URL override. Blank normally; the test-suite points it at SQLite.
+    # Full connection URL override (e.g. sqlite://...). Blank normally.
     database_url: str = ""
 
     # --- Optional integrations ---

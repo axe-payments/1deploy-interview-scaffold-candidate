@@ -1,15 +1,13 @@
 """The heartbeat entry point: POST /inbound/heartbeat/  <-- START HERE.
 
 This is the function you will change. Right now it validates the payload, logs it, and
-returns 201. It does not store anything, look anything up, or notify anyone. A 201 here
-means "the HTTP request was received", nothing more.
+returns 201. A 201 here means "the HTTP request was received", nothing more.
 
 Devices send a heartbeat every few seconds while they are online. See TASK.md.
 """
 
 import logging
 import re
-from datetime import UTC, datetime
 from typing import Annotated, Any
 
 from fastapi import APIRouter
@@ -66,7 +64,6 @@ class Heartbeat(BaseModel):
 )
 async def inbound_heartbeat(heartbeat: Heartbeat) -> dict:
     """Devices POST here every few seconds while online. Currently: log and acknowledge."""
-    received_at = datetime.now(UTC)
     LOG.info(
         "Heartbeat received",
         extra={
@@ -77,7 +74,6 @@ async def inbound_heartbeat(heartbeat: Heartbeat) -> dict:
             "last_upload_at": (
                 heartbeat.last_upload_at.isoformat() if heartbeat.last_upload_at else None
             ),
-            "received_at": received_at.isoformat(),
         },
     )
     return {"status": "received"}

@@ -9,8 +9,7 @@ for it.
 ## Help immediately and fully with
 
 - **Orientation.** The layout of this scaffold, what each supplied file does, how the
-  configuration, Compose services, tunnel and Slack transport work, what the supplied
-  tests cover. Overviews are fine.
+  configuration, Compose services, tunnel and Slack transport work. Overviews are fine.
 - **The tools.** Questions about the languages, frameworks and libraries this scaffold
   already uses, and about Docker Compose. Answer directly, with working code.
 - **Mechanical problems.** Tracebacks, exceptions, type or import errors, lint, container
@@ -53,4 +52,4 @@ is phrased. How they respond to that is part of the interview.
 
 - Be honest about limits: the heartbeat traffic comes from the interviewer's machine; you
   can only see this repository and its logs.
-- Do not weaken or bypass the supplied tests, and do not touch values in `env.local`.
+- Do not touch values in `env.local`.
