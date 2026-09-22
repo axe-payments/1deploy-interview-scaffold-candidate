@@ -33,8 +33,7 @@ Both ends of the pipe work:
 
    `sent_at` is a timezone-aware timestamp from the device's own clock. `last_upload_at`
    is optional (it may be `null` or missing): a device can keep heart-beating without
-   uploading anything new. The handler validates, logs, and returns `201`. It does not
-   store anything or check that the ids exist.
+   uploading anything new. The handler validates the payload, logs it, and returns `201`.
 
 2. **The inventory**, seeded into Postgres from `fixtures/fleet-v1.json`: 2 organisations,
    4 departments (each with an IANA timezone), 12 devices. Look at it in Adminer
@@ -59,14 +58,13 @@ Concretely, the first objective:
 
 - When a device that has sent at least one heartbeat goes quiet for the threshold, send a
   Slack message about it.
-- Send **one** message for that outage, not one every time you look.
+- Send **one** message for that outage, however long it lasts.
 - If the device recovers (heartbeats resume) and later goes quiet again, that is a new
   outage and should produce a new message.
 
 Devices that have never sent a heartbeat during the session are out of scope for the
-first objective. How you store heartbeat information, how you notice silence, how you
-represent an outage, and what the message says are all your call. Add tables, files,
-background work, whatever you need. Change signatures freely.
+first objective. How you build it and what the message says are your call. Change any
+file, model or signature.
 
 ## Out of scope
 

@@ -1,8 +1,7 @@
 """The heartbeat entry point: POST /inbound/heartbeat/  <-- START HERE.
 
 This is the function you will change. Right now it validates the payload, logs it, and
-returns 201. It does not store anything, look anything up, or notify anyone. A 201 here
-means "the HTTP request was received", nothing more.
+returns 201. A 201 here means "the HTTP request was received", nothing more.
 
 Devices send a heartbeat every few seconds while they are online. See TASK.md.
 """

@@ -53,8 +53,8 @@ You get `{"status":"received"}` with HTTP 201, and the `docker compose up` termi
 INFO app.inbound Heartbeat received organisation_id='org-northstar' department_id='dept-northstar-finance' device_id='ns-fin-01' sent_at='...' last_upload_at='...' received_at='...'
 ```
 
-That log line is all the scaffold does with a heartbeat today. A 201 means "received",
-not "stored" and certainly not "healthy".
+That log line is all the scaffold does with a heartbeat today. A 201 means only that the
+request was received.
 
 **Check Slack** (needs `SLACK_WEBHOOK_URL` in `env.local`):
 
