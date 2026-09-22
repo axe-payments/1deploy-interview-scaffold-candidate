@@ -11,10 +11,8 @@ output (the Slack transport). Everything between them is the candidate's exercis
 or planning notes) may implement, sketch or name any part of a solution, and nothing may
 call `notify()` / `_send_slack_message()` automatically.
 
-Tests in `tests/` prove the supplied pieces work (route validation, seeding, Slack transport
-redaction). A private companion repository (`1deploy-interview-scaffold-staff`) holds the
-interviewer's traffic simulator and guide. Anything that describes the solution belongs
-there, not here.
+A private companion repository (`1deploy-interview-scaffold-staff`) holds the interviewer's
+traffic simulator and guide. Anything that describes the solution belongs there, not here.
 
 ## 2. The shared contract
 

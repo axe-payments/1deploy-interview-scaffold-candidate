@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 #
-# Run the test-suite inside the running app container (no Python needed on your machine).
-# Extra arguments are passed to pytest:  ./scripts/test.sh -k inbound -v
-#
-# Tests use a throwaway SQLite database and a fake Slack transport; they never touch
-# Postgres or Slack.
+# Run pytest inside the running app container (no Python needed on your machine). No tests
+# are supplied; this runs any you add. Extra arguments are passed to pytest:
+#   ./scripts/test.sh -x -v
 
 source "$(dirname "$0")/_compose.sh"
 

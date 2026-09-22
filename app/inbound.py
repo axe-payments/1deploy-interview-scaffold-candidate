@@ -8,7 +8,6 @@ Devices send a heartbeat every few seconds while they are online. See TASK.md.
 
 import logging
 import re
-from datetime import UTC, datetime
 from typing import Annotated, Any
 
 from fastapi import APIRouter
@@ -65,7 +64,6 @@ class Heartbeat(BaseModel):
 )
 async def inbound_heartbeat(heartbeat: Heartbeat) -> dict:
     """Devices POST here every few seconds while online. Currently: log and acknowledge."""
-    received_at = datetime.now(UTC)
     LOG.info(
         "Heartbeat received",
         extra={
@@ -76,7 +74,6 @@ async def inbound_heartbeat(heartbeat: Heartbeat) -> dict:
             "last_upload_at": (
                 heartbeat.last_upload_at.isoformat() if heartbeat.last_upload_at else None
             ),
-            "received_at": received_at.isoformat(),
         },
     )
     return {"status": "received"}

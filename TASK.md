@@ -31,14 +31,13 @@ Both ends of the pipe work:
    }
    ```
 
-   `sent_at` is a timezone-aware timestamp from the device's own clock. `last_upload_at`
-   is optional (it may be `null` or missing): a device can keep heart-beating without
-   uploading anything new. The handler validates the payload, logs it, and returns `201`.
+   `sent_at` is a timezone-aware timestamp. `last_upload_at` is optional (it may be `null`
+   or missing): a device can keep heart-beating without uploading anything new. The handler
+   validates the payload, logs it, and returns `201`.
 
 2. **The inventory**, seeded into Postgres from `fixtures/fleet-v1.json`: 2 organisations,
    4 departments (each with an IANA timezone), 12 devices. Look at it in Adminer
-   (<http://localhost:8080>) or in `app/models.py`. Both organisations have a department
-   called Finance and one called Support, so use ids, not names.
+   (<http://localhost:8080>) or in `app/models.py`.
 
 3. **A Slack transport:** `_send_slack_message(message)` in `app/notifications.py` posts to
    the interview channel. `notify(...)` next to it is a placeholder wrapper: its
