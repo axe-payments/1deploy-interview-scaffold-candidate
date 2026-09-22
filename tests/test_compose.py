@@ -90,7 +90,13 @@ def test_app_and_postgres_receive_identical_credentials(project, shell_env):
 
 @needs_compose
 def test_blank_optional_settings_configure_and_profiles_stay_off(project):
-    assert set(compose_config(project, {})["services"]) == {"app", "postgres", "adminer"}
+    assert set(compose_config(project, {})["services"]) == {
+        "app",
+        "postgres",
+        "adminer",
+        "cloudflared",
+        "tunnel-url",
+    }
 
 
 @needs_compose
