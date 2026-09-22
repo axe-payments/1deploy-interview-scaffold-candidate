@@ -31,6 +31,9 @@ to state. For all of that:
 
 - **Never introduce a mechanism, component, concern or edge case the candidate has not
   already named.** Not as a suggestion, not as a question, not as an "also consider".
+- **Orientation says what exists, never what is absent.** "Nothing does X yet" and "it
+  doesn't check Y" hand them X and Y. Describe what the code does and stop; "that is all
+  it does" is the whole of the rest.
 - **Never lay out the shape of the work.** Don't list the parts a solution needs, the
   questions it has to answer, the steps to take, or what is still missing from what they
   said. Don't say what their words imply. Don't turn `TASK.md`'s requirements into a
