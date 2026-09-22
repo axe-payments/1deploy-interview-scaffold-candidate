@@ -108,8 +108,8 @@ not surprise you.
 
 ### Database
 
-Adminer at <http://localhost:8080>: System `PostgreSQL`, Server `postgres`, and the
-username / password / database from your `env.local`.
+Adminer at <http://localhost:8080> opens already logged in to the interview database,
+using the credentials from your `env.local`.
 
 New models in `app/models.py` get their tables created automatically on restart. Adding or
 changing columns on an *existing* table does not alter it. For that, reset the local

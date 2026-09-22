@@ -31,7 +31,8 @@ requires a coordinated change in both repositories.
   `scripts/_compose.sh` for that.
 - The helper scripts need only bash, curl and sed on the host; anything else runs inside
   the app container. Only the app port is ever tunnelled. Postgres has no host port; Adminer binds to
-  localhost.
+  localhost and logs itself in (`adminer/autologin.php`), which is acceptable only because
+  it is never tunnelled.
 - Logging never prints the webhook URL, connection strings or tokens. The `httpx` and
   `httpcore` loggers are pinned to WARNING for that reason.
 

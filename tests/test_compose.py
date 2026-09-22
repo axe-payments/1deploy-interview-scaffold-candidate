@@ -70,11 +70,12 @@ def compose_config(project: Path, shell_env: dict[str, str]) -> dict:
 
 @needs_compose
 @pytest.mark.parametrize("shell_env", [{}, SHELL_ENV], ids=["file-only", "shell-overrides-file"])
-def test_app_and_postgres_receive_identical_credentials(project, shell_env):
+def test_app_adminer_and_postgres_receive_identical_credentials(project, shell_env):
     services = compose_config(project, shell_env)["services"]
-    app_env, pg_env = services["app"]["environment"], services["postgres"]["environment"]
-    for key in ("POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD"):
-        assert app_env[key] == pg_env[key], key
+    pg_env = services["postgres"]["environment"]
+    for service in ("app", "adminer"):
+        for key in ("POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD"):
+            assert services[service]["environment"][key] == pg_env[key], (service, key)
     expected = shell_env or {
         "POSTGRES_PASSWORD": "synthetic-file-password",
         "POSTGRES_USER": "fileuser",
@@ -86,6 +87,20 @@ def test_app_and_postgres_receive_identical_credentials(project, shell_env):
     app_port = services["app"]["ports"][0]
     assert app_port["host_ip"] == "127.0.0.1"
     assert str(app_port["published"]) == shell_env.get("APP_PORT", "8000")
+
+
+@needs_compose
+def test_adminer_mounts_the_autologin_plugin(project):
+    """Without the plugin in plugins-enabled/, localhost:8080 falls back to a login form."""
+    adminer = compose_config(project, {})["services"]["adminer"]
+    mounts = [
+        m for m in adminer["volumes"] if m["target"].startswith("/var/www/html/plugins-enabled/")
+    ]
+    assert len(mounts) == 1
+    assert mounts[0]["read_only"] is True
+    source = Path(mounts[0]["source"]).resolve().relative_to(project.resolve())
+    assert (ROOT / source).is_file()
+    assert adminer["ports"][0]["host_ip"] == "127.0.0.1"
 
 
 @needs_compose
