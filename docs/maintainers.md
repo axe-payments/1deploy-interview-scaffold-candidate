@@ -26,6 +26,7 @@ requires a coordinated change in both repositories.
 
 ## Layout conventions
 
+- Branch from `origin/main` and open PRs against `main`.
 - `env.example` is tracked; `env.local` is not (see `.gitignore` and `.dockerignore`).
   Never commit credentials, never bake `env.local` into the image.
 - Every `docker compose` call needs `--env-file env.local`; scripts source
